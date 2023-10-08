@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>郵便番号検索サンプル KEN_ALL_MINI</title>
+
+    <script>
+      function searchPostCode() {
+        var postcode = document.getElementById("postcode").value;
+        postcode = postcode.replace(/-/g, "");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            var lines = this.responseText.split("\n");
+            for (var i = 0; i < lines.length; i++) {
+              var line = lines[i];
+              var fields = line.split(",");
+              if (fields[0] === postcode) {
+                document.getElementById("city").value = fields[1] + fields[2];
+                document.getElementById("town").value = fields[3]
+                  ? fields[3]
+                  : "";
+                return;
+              }
+            }
+            alert("該当する郵便番号が見つかりませんでした。");
+          }
+        };
+        xhttp.open("GET", "/KEN_ALL_MINI.CSV", true); // CSVファイルのパス
+        xhttp.send();
+      }
+    </script>
+  </head>
+  <body>
+    <h1>住所2項目・都道府県一体型</h1>
+    <form>
+      <label>郵便番号:</label>
+      <input type="text" id="postcode" placeholder="例: 123-4567" />
+      <button type="button" onclick="searchPostCode()">検索</button>
+
+      <br /><br />
+
+      <label>住所1（都道府県・市区町村）:</label>
+      <input type="text" id="city" />
+
+      <br /><br />
+
+      <label>住所2（町名・地名）:</label>
+      <input type="text" id="town" />
+    </form>
+
+  </body>
+</html>
